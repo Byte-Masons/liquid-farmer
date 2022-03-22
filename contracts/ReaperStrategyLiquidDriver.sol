@@ -11,13 +11,12 @@ import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
 /**
  * @dev Deposit TOMB-MAI LP in TShareRewardsPool. Harvest TSHARE rewards and recompound.
  */
-contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
+contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     // 3rd-party contract addresses
-    address public constant TOMB_ROUTER = address(0x6D0176C5ea1e44b08D3dd001b0784cE42F47a3A7);
-    address public constant SPOOKY_ROUTER = address(0xF491e7B69E4244ad4002BC14e878a34207E38c29);
-    address public constant TSHARE_REWARDS_POOL = address(0xcc0a87F7e7c693042a9Cc703661F5060c80ACb43);
+    address public router;
+    address public constant MASTER_CHEF = address(0x6e2ad6527901c9664f016466b8DA1357a004db0f);
 
     /**
      * @dev Tokens Used:
@@ -28,10 +27,11 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
      * {lpToken1} - MAI (name for FE compatibility)
      */
     address public constant WFTM = address(0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83);
-    address public constant TSHARE = address(0x4cdF39285D7Ca8eB3f090fDA0C069ba5F4145B37);
-    address public constant want = address(0x45f4682B560d4e3B8FF1F1b3A38FDBe775C7177b);
-    address public constant lpToken0 = address(0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB7);
-    address public constant lpToken1 = address(0xfB98B335551a418cD0737375a2ea0ded62Ea213b);
+    address public constant LQDR = address(0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9);
+    address public dualRewardToken;
+    address public lpToken0;
+    address public lpToken1;
+    address public want;
 
     /**
      * @dev Paths used to swap tokens:
@@ -56,13 +56,16 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
     function initialize(
         address _vault,
         address[] memory _feeRemitters,
-        address[] memory _strategists
+        address[] memory _strategists,
+        address _want,
+        uint256 _poolId,
+        address _router
     ) public initializer {
         __ReaperBaseStrategy_init(_vault, _feeRemitters, _strategists);
-        tshareToWftmPath = [TSHARE, WFTM];
-        wftmToTombPath = [WFTM, lpToken0];
-        tombToMaiPath = [lpToken0, lpToken1];
-        poolId = 2;
+        want = _want;
+        poolId = _poolId;
+        router = _router;
+
         _giveAllowances();
     }
 
@@ -73,7 +76,7 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
     function _deposit() internal override {
         uint256 wantBalance = IERC20Upgradeable(want).balanceOf(address(this));
         if (wantBalance != 0) {
-            IMasterChef(TSHARE_REWARDS_POOL).deposit(poolId, wantBalance);
+            IMasterChef(MASTER_CHEF).deposit(poolId, wantBalance, address(this));
         }
     }
 
@@ -81,12 +84,12 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
      * @dev Withdraws funds and sends them back to the vault.
      */
     function _withdraw(uint256 _amount) internal override {
-        uint256 wantBal = IERC20Upgradeable(want).balanceOf(address(this));
-        if (wantBal < _amount) {
-            IMasterChef(TSHARE_REWARDS_POOL).withdraw(poolId, _amount - wantBal);
-        }
+        // uint256 wantBal = IERC20Upgradeable(want).balanceOf(address(this));
+        // if (wantBal < _amount) {
+        //     IMasterChef(TSHARE_REWARDS_POOL).withdraw(poolId, _amount - wantBal);
+        // }
 
-        IERC20Upgradeable(want).safeTransfer(vault, _amount);
+        // IERC20Upgradeable(want).safeTransfer(vault, _amount);
     }
 
     /**
@@ -99,20 +102,20 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
      *      6. Creates new LP tokens and deposits.
      */
     function _harvestCore() internal override {
-        IMasterChef(TSHARE_REWARDS_POOL).deposit(poolId, 0); // deposit 0 to claim rewards
+        // IMasterChef(TSHARE_REWARDS_POOL).deposit(poolId, 0); // deposit 0 to claim rewards
 
-        uint256 tshareBal = IERC20Upgradeable(TSHARE).balanceOf(address(this));
-        _swap(tshareBal, tshareToWftmPath, SPOOKY_ROUTER);
+        // uint256 tshareBal = IERC20Upgradeable(TSHARE).balanceOf(address(this));
+        // _swap(tshareBal, tshareToWftmPath, SPOOKY_ROUTER);
 
-        _chargeFees();
+        // _chargeFees();
 
-        uint256 wftmBal = IERC20Upgradeable(WFTM).balanceOf(address(this));
-        _swap(wftmBal, wftmToTombPath, SPOOKY_ROUTER);
-        uint256 tombHalf = IERC20Upgradeable(lpToken0).balanceOf(address(this)) / 2;
-        _swap(tombHalf, tombToMaiPath, TOMB_ROUTER);
+        // uint256 wftmBal = IERC20Upgradeable(WFTM).balanceOf(address(this));
+        // _swap(wftmBal, wftmToTombPath, SPOOKY_ROUTER);
+        // uint256 tombHalf = IERC20Upgradeable(lpToken0).balanceOf(address(this)) / 2;
+        // _swap(tombHalf, tombToMaiPath, TOMB_ROUTER);
 
-        _addLiquidity();
-        deposit();
+        // _addLiquidity();
+        // deposit();
     }
 
     /**
@@ -123,17 +126,17 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
         address[] memory _path,
         address _router
     ) internal {
-        if (_path.length < 2 || _amount == 0) {
-            return;
-        }
+        // if (_path.length < 2 || _amount == 0) {
+        //     return;
+        // }
 
-        IUniswapV2Router02(_router).swapExactTokensForTokensSupportingFeeOnTransferTokens(
-            _amount,
-            0,
-            _path,
-            address(this),
-            block.timestamp
-        );
+        // IUniswapV2Router02(_router).swapExactTokensForTokensSupportingFeeOnTransferTokens(
+        //     _amount,
+        //     0,
+        //     _path,
+        //     address(this),
+        //     block.timestamp
+        // );
     }
 
     /**
@@ -141,39 +144,39 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
      *      Charges fees based on the amount of WFTM gained from reward
      */
     function _chargeFees() internal {
-        IERC20Upgradeable wftm = IERC20Upgradeable(WFTM);
-        uint256 wftmFee = (wftm.balanceOf(address(this)) * totalFee) / PERCENT_DIVISOR;
-        if (wftmFee != 0) {
-            uint256 callFeeToUser = (wftmFee * callFee) / PERCENT_DIVISOR;
-            uint256 treasuryFeeToVault = (wftmFee * treasuryFee) / PERCENT_DIVISOR;
-            uint256 feeToStrategist = (treasuryFeeToVault * strategistFee) / PERCENT_DIVISOR;
-            treasuryFeeToVault -= feeToStrategist;
+        // IERC20Upgradeable wftm = IERC20Upgradeable(WFTM);
+        // uint256 wftmFee = (wftm.balanceOf(address(this)) * totalFee) / PERCENT_DIVISOR;
+        // if (wftmFee != 0) {
+        //     uint256 callFeeToUser = (wftmFee * callFee) / PERCENT_DIVISOR;
+        //     uint256 treasuryFeeToVault = (wftmFee * treasuryFee) / PERCENT_DIVISOR;
+        //     uint256 feeToStrategist = (treasuryFeeToVault * strategistFee) / PERCENT_DIVISOR;
+        //     treasuryFeeToVault -= feeToStrategist;
 
-            wftm.safeTransfer(msg.sender, callFeeToUser);
-            wftm.safeTransfer(treasury, treasuryFeeToVault);
-            wftm.safeTransfer(strategistRemitter, feeToStrategist);
-        }
+        //     wftm.safeTransfer(msg.sender, callFeeToUser);
+        //     wftm.safeTransfer(treasury, treasuryFeeToVault);
+        //     wftm.safeTransfer(strategistRemitter, feeToStrategist);
+        // }
     }
 
     /**
      * @dev Core harvest function. Adds more liquidity using {lpToken0} and {lpToken1}.
      */
     function _addLiquidity() internal {
-        uint256 lp0Bal = IERC20Upgradeable(lpToken0).balanceOf(address(this));
-        uint256 lp1Bal = IERC20Upgradeable(lpToken1).balanceOf(address(this));
+        // uint256 lp0Bal = IERC20Upgradeable(lpToken0).balanceOf(address(this));
+        // uint256 lp1Bal = IERC20Upgradeable(lpToken1).balanceOf(address(this));
 
-        if (lp0Bal != 0 && lp1Bal != 0) {
-            IUniswapV2Router02(TOMB_ROUTER).addLiquidity(
-                lpToken0,
-                lpToken1,
-                lp0Bal,
-                lp1Bal,
-                0,
-                0,
-                address(this),
-                block.timestamp
-            );
-        }
+        // if (lp0Bal != 0 && lp1Bal != 0) {
+        //     IUniswapV2Router02(TOMB_ROUTER).addLiquidity(
+        //         lpToken0,
+        //         lpToken1,
+        //         lp0Bal,
+        //         lp1Bal,
+        //         0,
+        //         0,
+        //         address(this),
+        //         block.timestamp
+        //     );
+        // }
     }
 
     /**
@@ -181,8 +184,18 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
      *      It takes into account both the funds in hand, plus the funds in the MasterChef.
      */
     function balanceOf() public view override returns (uint256) {
-        (uint256 amount, ) = IMasterChef(TSHARE_REWARDS_POOL).userInfo(poolId, address(this));
-        return amount + IERC20Upgradeable(want).balanceOf(address(this));
+        return balanceOfWant() + balanceOfPool();
+    }
+
+    /** @dev it calculates how much 'want' this contract holds */
+    function balanceOfWant() public view returns (uint256) {
+        return IERC20Upgradeable(want).balanceOf(address(this));
+    }
+
+    /** @dev it calculates how much 'want' the strategy has working in the farm */
+    function balanceOfPool() public view returns (uint256) {
+        (uint256 amount, ) = IMasterChef(MASTER_CHEF).userInfo(poolId, address(this));
+        return amount;
     }
 
     /**
@@ -190,18 +203,18 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
      *      Profit is denominated in WFTM, and takes fees into account.
      */
     function estimateHarvest() external view override returns (uint256 profit, uint256 callFeeToUser) {
-        uint256 pendingReward = IMasterChef(TSHARE_REWARDS_POOL).pendingShare(poolId, address(this));
-        uint256 totalRewards = pendingReward + IERC20Upgradeable(TSHARE).balanceOf(address(this));
+        // uint256 pendingReward = IMasterChef(TSHARE_REWARDS_POOL).pendingShare(poolId, address(this));
+        // uint256 totalRewards = pendingReward + IERC20Upgradeable(TSHARE).balanceOf(address(this));
 
-        if (totalRewards != 0) {
-            profit += IUniswapV2Router02(SPOOKY_ROUTER).getAmountsOut(totalRewards, tshareToWftmPath)[1];
-        }
+        // if (totalRewards != 0) {
+        //     profit += IUniswapV2Router02(SPOOKY_ROUTER).getAmountsOut(totalRewards, tshareToWftmPath)[1];
+        // }
 
-        profit += IERC20Upgradeable(WFTM).balanceOf(address(this));
+        // profit += IERC20Upgradeable(WFTM).balanceOf(address(this));
 
-        uint256 wftmFee = (profit * totalFee) / PERCENT_DIVISOR;
-        callFeeToUser = (wftmFee * callFee) / PERCENT_DIVISOR;
-        profit -= wftmFee;
+        // uint256 wftmFee = (profit * totalFee) / PERCENT_DIVISOR;
+        // callFeeToUser = (wftmFee * callFee) / PERCENT_DIVISOR;
+        // profit -= wftmFee;
     }
 
     /**
@@ -212,30 +225,30 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
      * Note: this is not an emergency withdraw function. For that, see panic().
      */
     function _retireStrat() internal override {
-        IMasterChef(TSHARE_REWARDS_POOL).deposit(poolId, 0); // deposit 0 to claim rewards
+        // IMasterChef(TSHARE_REWARDS_POOL).deposit(poolId, 0); // deposit 0 to claim rewards
 
-        uint256 tshareBal = IERC20Upgradeable(TSHARE).balanceOf(address(this));
-        _swap(tshareBal, tshareToWftmPath, SPOOKY_ROUTER);
+        // uint256 tshareBal = IERC20Upgradeable(TSHARE).balanceOf(address(this));
+        // _swap(tshareBal, tshareToWftmPath, SPOOKY_ROUTER);
 
-        uint256 wftmBal = IERC20Upgradeable(WFTM).balanceOf(address(this));
-        _swap(wftmBal, wftmToTombPath, SPOOKY_ROUTER);
-        uint256 tombHalf = IERC20Upgradeable(lpToken0).balanceOf(address(this)) / 2;
-        _swap(tombHalf, tombToMaiPath, TOMB_ROUTER);
+        // uint256 wftmBal = IERC20Upgradeable(WFTM).balanceOf(address(this));
+        // _swap(wftmBal, wftmToTombPath, SPOOKY_ROUTER);
+        // uint256 tombHalf = IERC20Upgradeable(lpToken0).balanceOf(address(this)) / 2;
+        // _swap(tombHalf, tombToMaiPath, TOMB_ROUTER);
 
-        _addLiquidity();
+        // _addLiquidity();
 
-        (uint256 poolBal, ) = IMasterChef(TSHARE_REWARDS_POOL).userInfo(poolId, address(this));
-        IMasterChef(TSHARE_REWARDS_POOL).withdraw(poolId, poolBal);
+        // (uint256 poolBal, ) = IMasterChef(TSHARE_REWARDS_POOL).userInfo(poolId, address(this));
+        // IMasterChef(TSHARE_REWARDS_POOL).withdraw(poolId, poolBal);
 
-        uint256 wantBalance = IERC20Upgradeable(want).balanceOf(address(this));
-        IERC20Upgradeable(want).safeTransfer(vault, wantBalance);
+        // uint256 wantBalance = IERC20Upgradeable(want).balanceOf(address(this));
+        // IERC20Upgradeable(want).safeTransfer(vault, wantBalance);
     }
 
     /**
      * Withdraws all funds leaving rewards behind.
      */
     function _reclaimWant() internal override {
-        IMasterChef(TSHARE_REWARDS_POOL).emergencyWithdraw(poolId);
+        // IMasterChef(TSHARE_REWARDS_POOL).emergencyWithdraw(poolId);
     }
 
     /**
@@ -247,26 +260,34 @@ contract ReaperStrategyTombMai is ReaperBaseStrategyv1_1 {
      *      - add liquidity using {lpToken0} and {lpToken1} in {TOMB_ROUTER}
      */
     function _giveAllowances() internal override {
-        IERC20Upgradeable(want).safeApprove(TSHARE_REWARDS_POOL, 0);
-        IERC20Upgradeable(want).safeApprove(TSHARE_REWARDS_POOL, type(uint256).max);
-        IERC20Upgradeable(TSHARE).safeApprove(SPOOKY_ROUTER, 0);
-        IERC20Upgradeable(TSHARE).safeApprove(SPOOKY_ROUTER, type(uint256).max);
-        IERC20Upgradeable(WFTM).safeApprove(SPOOKY_ROUTER, 0);
-        IERC20Upgradeable(WFTM).safeApprove(SPOOKY_ROUTER, type(uint256).max);
-        IERC20Upgradeable(lpToken0).safeApprove(TOMB_ROUTER, 0);
-        IERC20Upgradeable(lpToken0).safeApprove(TOMB_ROUTER, type(uint256).max);
-        IERC20Upgradeable(lpToken1).safeApprove(TOMB_ROUTER, 0);
-        IERC20Upgradeable(lpToken1).safeApprove(TOMB_ROUTER, type(uint256).max);
+        // want -> MASTER_CHEF
+        uint256 wantAllowance = type(uint256).max - IERC20Upgradeable(want).allowance(address(this), MASTER_CHEF);
+        IERC20Upgradeable(want).safeIncreaseAllowance(MASTER_CHEF, wantAllowance);
+        // CRV -> SPOOKY_ROUTER
+        // uint256 crvAllowance = type(uint256).max - IERC20Upgradeable(CRV).allowance(address(this), SPOOKY_ROUTER);
+        // IERC20Upgradeable(CRV).safeIncreaseAllowance(SPOOKY_ROUTER, crvAllowance);
+        // // GEIST -> SPOOKY_ROUTER
+        // uint256 geistAllowance = type(uint256).max - IERC20Upgradeable(GEIST).allowance(address(this), SPOOKY_ROUTER);
+        // IERC20Upgradeable(GEIST).safeIncreaseAllowance(SPOOKY_ROUTER, geistAllowance);
+        // // WFTM -> SPOOKY_ROUTER
+        // uint256 wftmAllowance = type(uint256).max - IERC20Upgradeable(WFTM).allowance(address(this), SPOOKY_ROUTER);
+        // IERC20Upgradeable(WFTM).safeIncreaseAllowance(SPOOKY_ROUTER, wftmAllowance);
+        // // depositToken -> swapPool
+        // uint256 depositAllowance = type(uint256).max - IERC20Upgradeable(depositToken).allowance(address(this), swapPool);
+        // IERC20Upgradeable(depositToken).safeIncreaseAllowance(swapPool, depositAllowance);
     }
 
     /**
      * @dev Removes all the allowances that were given above.
      */
     function _removeAllowances() internal override {
-        IERC20Upgradeable(want).safeApprove(TSHARE_REWARDS_POOL, 0);
-        IERC20Upgradeable(TSHARE).safeApprove(SPOOKY_ROUTER, 0);
-        IERC20Upgradeable(WFTM).safeApprove(SPOOKY_ROUTER, 0);
-        IERC20Upgradeable(lpToken0).safeApprove(TOMB_ROUTER, 0);
-        IERC20Upgradeable(lpToken1).safeApprove(TOMB_ROUTER, 0);
+        IERC20Upgradeable(want).safeDecreaseAllowance(
+            MASTER_CHEF,
+            IERC20Upgradeable(want).allowance(address(this), MASTER_CHEF)
+        );
+        // IERC20Upgradeable(TSHARE).safeApprove(SPOOKY_ROUTER, 0);
+        // IERC20Upgradeable(WFTM).safeApprove(SPOOKY_ROUTER, 0);
+        // IERC20Upgradeable(lpToken0).safeApprove(TOMB_ROUTER, 0);
+        // IERC20Upgradeable(lpToken1).safeApprove(TOMB_ROUTER, 0);
     }
 }
