@@ -8,6 +8,8 @@ import "./interfaces/IUniswapV2Router02.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @dev Deposit TOMB-MAI LP in TShareRewardsPool. Harvest TSHARE rewards and recompound.
  */
@@ -16,6 +18,7 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
 
     // 3rd-party contract addresses
     address public router;
+    address public dualRewardRouter;
     address public constant MASTER_CHEF = address(0x6e2ad6527901c9664f016466b8DA1357a004db0f);
 
     /**
@@ -39,15 +42,14 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
      * {wftmToTombPath} - to swap {WFTM} to {lpToken0} (using SPOOKY_ROUTER)
      * {tombToMaiPath} - to swap half of {lpToken0} to {lpToken1} (using TOMB_ROUTER)
      */
-    address[] public tshareToWftmPath;
-    address[] public wftmToTombPath;
-    address[] public tombToMaiPath;
+    address[] public dualRewardRoute;
 
     /**
      * @dev Tomb variables
      * {poolId} - ID of pool in which to deposit LP tokens
      */
     uint256 public poolId;
+    bool public useDualRewards;
 
     /**
      * @dev Initializes the strategy. Sets parameters and saves routes.
@@ -65,6 +67,7 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
         want = _want;
         poolId = _poolId;
         router = _router;
+        useDualRewards = false;
 
         _giveAllowances();
     }
@@ -102,10 +105,9 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
      *      6. Creates new LP tokens and deposits.
      */
     function _harvestCore() internal override {
-        // IMasterChef(TSHARE_REWARDS_POOL).deposit(poolId, 0); // deposit 0 to claim rewards
+        IMasterChef(MASTER_CHEF).harvest(poolId, address(this));
 
-        // uint256 tshareBal = IERC20Upgradeable(TSHARE).balanceOf(address(this));
-        // _swap(tshareBal, tshareToWftmPath, SPOOKY_ROUTER);
+        _swapRewards();
 
         // _chargeFees();
 
@@ -119,6 +121,21 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
     }
 
     /**
+     * @dev Core harvest function. Swaps {LQDR} and {dualRewardToken} balances into {WFTM}.
+     */
+    function _swapRewards() internal {
+        uint256 lqdrBal = IERC20Upgradeable(LQDR).balanceOf(address(this));
+        address[] memory lqdrToWftmPath = new address[](2);
+        lqdrToWftmPath[0] = LQDR;
+        lqdrToWftmPath[1] = WFTM;
+        _swap(lqdrBal, lqdrToWftmPath, router);
+        if (useDualRewards) {
+            uint256 dualRewardTokenBal = IERC20Upgradeable(dualRewardToken).balanceOf(address(this));
+            _swap(dualRewardTokenBal, dualRewardRoute, dualRewardRouter);
+        }
+    }
+
+    /**
      * @dev Helper function to swap tokens given an {_amount}, swap {_path}, and {_router}.
      */
     function _swap(
@@ -126,17 +143,17 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
         address[] memory _path,
         address _router
     ) internal {
-        // if (_path.length < 2 || _amount == 0) {
-        //     return;
-        // }
+        if (_path.length < 2 || _amount == 0) {
+            return;
+        }
 
-        // IUniswapV2Router02(_router).swapExactTokensForTokensSupportingFeeOnTransferTokens(
-        //     _amount,
-        //     0,
-        //     _path,
-        //     address(this),
-        //     block.timestamp
-        // );
+        IUniswapV2Router02(_router).swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            _amount,
+            0,
+            _path,
+            address(this),
+            block.timestamp
+        );
     }
 
     /**
@@ -263,12 +280,14 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
         // want -> MASTER_CHEF
         uint256 wantAllowance = type(uint256).max - IERC20Upgradeable(want).allowance(address(this), MASTER_CHEF);
         IERC20Upgradeable(want).safeIncreaseAllowance(MASTER_CHEF, wantAllowance);
-        // CRV -> SPOOKY_ROUTER
-        // uint256 crvAllowance = type(uint256).max - IERC20Upgradeable(CRV).allowance(address(this), SPOOKY_ROUTER);
-        // IERC20Upgradeable(CRV).safeIncreaseAllowance(SPOOKY_ROUTER, crvAllowance);
-        // // GEIST -> SPOOKY_ROUTER
-        // uint256 geistAllowance = type(uint256).max - IERC20Upgradeable(GEIST).allowance(address(this), SPOOKY_ROUTER);
-        // IERC20Upgradeable(GEIST).safeIncreaseAllowance(SPOOKY_ROUTER, geistAllowance);
+        // LQDR -> router
+        uint256 lqdrAllowance = type(uint256).max - IERC20Upgradeable(LQDR).allowance(address(this), router);
+        IERC20Upgradeable(LQDR).safeIncreaseAllowance(router, lqdrAllowance);
+        if (useDualRewards) {
+            // dualRewardToken -> router
+            uint256 dualRewardTokenAllowance = type(uint256).max - IERC20Upgradeable(dualRewardToken).allowance(address(this), dualRewardRouter);
+            IERC20Upgradeable(dualRewardToken).safeIncreaseAllowance(dualRewardRouter, dualRewardTokenAllowance);
+        }
         // // WFTM -> SPOOKY_ROUTER
         // uint256 wftmAllowance = type(uint256).max - IERC20Upgradeable(WFTM).allowance(address(this), SPOOKY_ROUTER);
         // IERC20Upgradeable(WFTM).safeIncreaseAllowance(SPOOKY_ROUTER, wftmAllowance);
@@ -289,5 +308,22 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
         // IERC20Upgradeable(WFTM).safeApprove(SPOOKY_ROUTER, 0);
         // IERC20Upgradeable(lpToken0).safeApprove(TOMB_ROUTER, 0);
         // IERC20Upgradeable(lpToken1).safeApprove(TOMB_ROUTER, 0);
+    }
+
+    function dualRewardSetUp(
+        address _token,
+        address _router,
+        address[] memory _toWftmRoute
+    ) external {
+        _onlyStrategistOrOwner();
+        dualRewardToken = _token;
+        dualRewardRouter = _router;
+        dualRewardRoute = _toWftmRoute;
+        _giveAllowances();
+    }
+
+    function setUseDualRewards(bool _useDualRewards) external {
+        _onlyStrategistOrOwner();
+        useDualRewards = _useDualRewards;
     }
 }

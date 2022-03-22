@@ -8,7 +8,7 @@
     },
     {
       "address": "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f",
-      "txHash": "0x5a5ada6403ca5ca38584b00f52955a3eade34bf8914f6bcae1b44a89b921beee",
+      "txHash": "0x1bd8dbaae0ff7d1e92ba5a19586c549c1d6253b07dc61b7555829e4b22036df8",
       "kind": "uups"
     }
   ],
@@ -808,9 +808,9 @@
         }
       }
     },
-    "a34ed6b74135237e336e53cdadab0659c70b2920e9b073809be651bd1e12c10e": {
+    "601e4d0adf8765e71a18d286e9089b04934b41dd51227d7b894c2d7a651932df": {
       "address": "0x922D6956C99E12DFeB3224DEA977D0939758A1Fe",
-      "txHash": "0x53aab2595cdc6c186d03f061480dd450e04d335e01b2fc891f3892bf93bb712f",
+      "txHash": "0x01ca0a24113c9d89aa49c0ac295e97a6f233271df99df1f5c862d9f10904130d",
       "layout": {
         "storage": [
           {
@@ -913,7 +913,7 @@
             "label": "harvestLog",
             "offset": 0,
             "slot": "351",
-            "type": "t_array(t_struct(Harvest)5602_storage)dyn_storage",
+            "type": "t_array(t_struct(Harvest)5832_storage)dyn_storage",
             "contract": "ReaperBaseStrategyv1_1",
             "src": "contracts\\abstract\\ReaperBaseStrategyv1_1.sol:27"
           },
@@ -1011,71 +1011,71 @@
             "slot": "363",
             "type": "t_address",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:18"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:20"
           },
           {
-            "label": "dualRewardToken",
+            "label": "dualRewardRouter",
             "offset": 0,
             "slot": "364",
             "type": "t_address",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:31"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:21"
           },
           {
-            "label": "lpToken0",
+            "label": "dualRewardToken",
             "offset": 0,
             "slot": "365",
-            "type": "t_address",
-            "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:32"
-          },
-          {
-            "label": "lpToken1",
-            "offset": 0,
-            "slot": "366",
-            "type": "t_address",
-            "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:33"
-          },
-          {
-            "label": "want",
-            "offset": 0,
-            "slot": "367",
             "type": "t_address",
             "contract": "ReaperStrategyLiquidDriver",
             "src": "contracts\\ReaperStrategyLiquidDriver.sol:34"
           },
           {
-            "label": "tshareToWftmPath",
+            "label": "lpToken0",
             "offset": 0,
-            "slot": "368",
-            "type": "t_array(t_address)dyn_storage",
+            "slot": "366",
+            "type": "t_address",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:42"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:35"
           },
           {
-            "label": "wftmToTombPath",
+            "label": "lpToken1",
+            "offset": 0,
+            "slot": "367",
+            "type": "t_address",
+            "contract": "ReaperStrategyLiquidDriver",
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:36"
+          },
+          {
+            "label": "want",
+            "offset": 0,
+            "slot": "368",
+            "type": "t_address",
+            "contract": "ReaperStrategyLiquidDriver",
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:37"
+          },
+          {
+            "label": "dualRewardRoute",
             "offset": 0,
             "slot": "369",
             "type": "t_array(t_address)dyn_storage",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:43"
-          },
-          {
-            "label": "tombToMaiPath",
-            "offset": 0,
-            "slot": "370",
-            "type": "t_array(t_address)dyn_storage",
-            "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:44"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:45"
           },
           {
             "label": "poolId",
             "offset": 0,
-            "slot": "371",
+            "slot": "370",
             "type": "t_uint256",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:50"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:51"
+          },
+          {
+            "label": "useDualRewards",
+            "offset": 0,
+            "slot": "371",
+            "type": "t_bool",
+            "contract": "ReaperStrategyLiquidDriver",
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:52"
           }
         ],
         "types": {
@@ -1091,7 +1091,7 @@
             "label": "bytes32[]",
             "numberOfBytes": "32"
           },
-          "t_array(t_struct(Harvest)5602_storage)dyn_storage": {
+          "t_array(t_struct(Harvest)5832_storage)dyn_storage": {
             "label": "struct ReaperBaseStrategyv1_1.Harvest[]",
             "numberOfBytes": "32"
           },
@@ -1139,7 +1139,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(Harvest)5602_storage": {
+          "t_struct(Harvest)5832_storage": {
             "label": "struct ReaperBaseStrategyv1_1.Harvest",
             "members": [
               {

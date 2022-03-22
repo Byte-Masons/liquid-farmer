@@ -90,6 +90,13 @@ describe('Vaults', function () {
     await vault.initialize(strategy.address);
     want = await Want.attach(wantAddress);
 
+    await strategy.setUseDualRewards(true);
+    const deus = '0xde5ed76e7c05ec5e4572cfc88d1acea165109e44';
+    const wftm = '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83';
+    const spiritRouter = '0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52';
+    const toWftmRoute = [deus, wftm];
+    await strategy.dualRewardSetUp(deus, spiritRouter, toWftmRoute);
+
     //approving LP token and vault share spend
     await want.connect(wantHolder).approve(vault.address, ethers.constants.MaxUint256);
   });
@@ -117,7 +124,7 @@ describe('Vaults', function () {
       expect(depositAmount).to.be.closeTo(newVaultBalance, allowedInaccuracy);
     });
 
-    it('should mint user their pool share', async function () {
+    xit('should mint user their pool share', async function () {
       const userBalance = await want.balanceOf(wantHolderAddr);
       const depositAmount = toWantUnit('10');
       await vault.connect(wantHolder).deposit(depositAmount);
@@ -143,7 +150,7 @@ describe('Vaults', function () {
 
     xit('should allow withdrawals', async function () {
       const userBalance = await want.balanceOf(wantHolderAddr);
-      const depositAmount = toWantUnit('100');
+      const depositAmount = toWantUnit('10');
       await vault.connect(wantHolder).deposit(depositAmount);
 
       await vault.connect(wantHolder).withdrawAll();
@@ -199,8 +206,8 @@ describe('Vaults', function () {
       expect(isSmallBalanceDifference).to.equal(true);
     });
 
-    xit('should be able to harvest', async function () {
-      await vault.connect(wantHolder).deposit(toWantUnit('1000'));
+    it('should be able to harvest', async function () {
+      await vault.connect(wantHolder).deposit(toWantUnit('20'));
       await strategy.harvest();
     });
 
