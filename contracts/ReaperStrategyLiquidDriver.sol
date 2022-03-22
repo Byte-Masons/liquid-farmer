@@ -84,12 +84,12 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
      * @dev Withdraws funds and sends them back to the vault.
      */
     function _withdraw(uint256 _amount) internal override {
-        // uint256 wantBal = IERC20Upgradeable(want).balanceOf(address(this));
-        // if (wantBal < _amount) {
-        //     IMasterChef(TSHARE_REWARDS_POOL).withdraw(poolId, _amount - wantBal);
-        // }
+        uint256 wantBal = IERC20Upgradeable(want).balanceOf(address(this));
+        if (wantBal < _amount) {
+            IMasterChef(MASTER_CHEF).withdraw(poolId, _amount - wantBal, address(this));
+        }
 
-        // IERC20Upgradeable(want).safeTransfer(vault, _amount);
+        IERC20Upgradeable(want).safeTransfer(vault, _amount);
     }
 
     /**
