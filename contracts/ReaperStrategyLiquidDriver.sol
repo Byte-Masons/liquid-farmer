@@ -109,7 +109,7 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
 
         _swapRewards();
 
-        // _chargeFees();
+        _chargeFees();
 
         // uint256 wftmBal = IERC20Upgradeable(WFTM).balanceOf(address(this));
         // _swap(wftmBal, wftmToTombPath, SPOOKY_ROUTER);
@@ -161,18 +161,18 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
      *      Charges fees based on the amount of WFTM gained from reward
      */
     function _chargeFees() internal {
-        // IERC20Upgradeable wftm = IERC20Upgradeable(WFTM);
-        // uint256 wftmFee = (wftm.balanceOf(address(this)) * totalFee) / PERCENT_DIVISOR;
-        // if (wftmFee != 0) {
-        //     uint256 callFeeToUser = (wftmFee * callFee) / PERCENT_DIVISOR;
-        //     uint256 treasuryFeeToVault = (wftmFee * treasuryFee) / PERCENT_DIVISOR;
-        //     uint256 feeToStrategist = (treasuryFeeToVault * strategistFee) / PERCENT_DIVISOR;
-        //     treasuryFeeToVault -= feeToStrategist;
+        IERC20Upgradeable wftm = IERC20Upgradeable(WFTM);
+        uint256 wftmFee = (wftm.balanceOf(address(this)) * totalFee) / PERCENT_DIVISOR;
+        if (wftmFee != 0) {
+            uint256 callFeeToUser = (wftmFee * callFee) / PERCENT_DIVISOR;
+            uint256 treasuryFeeToVault = (wftmFee * treasuryFee) / PERCENT_DIVISOR;
+            uint256 feeToStrategist = (treasuryFeeToVault * strategistFee) / PERCENT_DIVISOR;
+            treasuryFeeToVault -= feeToStrategist;
 
-        //     wftm.safeTransfer(msg.sender, callFeeToUser);
-        //     wftm.safeTransfer(treasury, treasuryFeeToVault);
-        //     wftm.safeTransfer(strategistRemitter, feeToStrategist);
-        // }
+            wftm.safeTransfer(msg.sender, callFeeToUser);
+            wftm.safeTransfer(treasury, treasuryFeeToVault);
+            wftm.safeTransfer(strategistRemitter, feeToStrategist);
+        }
     }
 
     /**
