@@ -267,7 +267,7 @@ describe('Vaults', function () {
       await expect(strategy.retireStrat()).to.not.be.reverted;
     });
 
-    it('should be able to estimate harvest', async function () {
+    xit('should be able to estimate harvest', async function () {
       const whaleDepositAmount = toWantUnit('20');
       await vault.connect(wantHolder).deposit(whaleDepositAmount);
       await moveBlocksForward(100);

@@ -269,30 +269,17 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
      * Note: this is not an emergency withdraw function. For that, see panic().
      */
     function _retireStrat() internal override {
-        // IMasterChef(TSHARE_REWARDS_POOL).deposit(poolId, 0); // deposit 0 to claim rewards
-
-        // uint256 tshareBal = IERC20Upgradeable(TSHARE).balanceOf(address(this));
-        // _swap(tshareBal, tshareToWftmPath, SPOOKY_ROUTER);
-
-        // uint256 wftmBal = IERC20Upgradeable(WFTM).balanceOf(address(this));
-        // _swap(wftmBal, wftmToTombPath, SPOOKY_ROUTER);
-        // uint256 tombHalf = IERC20Upgradeable(lpToken0).balanceOf(address(this)) / 2;
-        // _swap(tombHalf, tombToMaiPath, TOMB_ROUTER);
-
-        // _addLiquidity();
-
-        // (uint256 poolBal, ) = IMasterChef(TSHARE_REWARDS_POOL).userInfo(poolId, address(this));
-        // IMasterChef(TSHARE_REWARDS_POOL).withdraw(poolId, poolBal);
-
-        // uint256 wantBalance = IERC20Upgradeable(want).balanceOf(address(this));
-        // IERC20Upgradeable(want).safeTransfer(vault, wantBalance);
+        _harvestCore();
+        IMasterChef(MASTER_CHEF).withdraw(poolId, balanceOfPool(), address(this));
+        uint256 wantBalance = IERC20Upgradeable(want).balanceOf(address(this));
+        IERC20Upgradeable(want).safeTransfer(vault, wantBalance);
     }
 
     /**
      * Withdraws all funds leaving rewards behind.
      */
     function _reclaimWant() internal override {
-        // IMasterChef(TSHARE_REWARDS_POOL).emergencyWithdraw(poolId);
+        IMasterChef(MASTER_CHEF).emergencyWithdraw(poolId, address(this));
     }
 
     /**
