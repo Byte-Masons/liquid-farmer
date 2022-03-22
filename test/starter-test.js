@@ -80,22 +80,14 @@ describe('Vaults', function () {
     //deploy contracts
     vault = await Vault.deploy(wantAddress, 'LQDR', 'rf-LQDR', 0, ethers.constants.MaxUint256);
     const poolId = 37;
-    const router = '0xF491e7B69E4244ad4002BC14e878a34207E38c29';
     strategy = await hre.upgrades.deployProxy(
       Strategy,
-      [vault.address, [treasuryAddr, paymentSplitterAddress], [strategistAddr], wantAddress, poolId, router],
+      [vault.address, [treasuryAddr, paymentSplitterAddress], [strategistAddr], wantAddress, poolId],
       {kind: 'uups'},
     );
     await strategy.deployed();
     await vault.initialize(strategy.address);
     want = await Want.attach(wantAddress);
-
-    await strategy.setUseDualRewards(true);
-    const deus = '0xde5ed76e7c05ec5e4572cfc88d1acea165109e44';
-    const wftm = '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83';
-    const spiritRouter = '0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52';
-    const toWftmRoute = [deus, wftm];
-    await strategy.dualRewardSetUp(deus, spiritRouter, toWftmRoute);
 
     //approving LP token and vault share spend
     await want.connect(wantHolder).approve(vault.address, ethers.constants.MaxUint256);
@@ -206,24 +198,24 @@ describe('Vaults', function () {
       expect(isSmallBalanceDifference).to.equal(true);
     });
 
-    it('should be able to harvest', async function () {
+    xit('should be able to harvest', async function () {
       await vault.connect(wantHolder).deposit(toWantUnit('20'));
       await strategy.harvest();
     });
 
     xit('should provide yield', async function () {
-      const timeToSkip = 3600;
+      const blocksToSkip = 1000;
       const initialUserBalance = await want.balanceOf(wantHolderAddr);
       const depositAmount = initialUserBalance.div(10);
 
       await vault.connect(wantHolder).deposit(depositAmount);
       const initialVaultBalance = await vault.balance();
 
-      await strategy.updateHarvestLogCadence(timeToSkip / 2);
+      await strategy.updateHarvestLogCadence(1);
 
       const numHarvests = 5;
       for (let i = 0; i < numHarvests; i++) {
-        await moveTimeForward(timeToSkip);
+        await moveBlocksForward(blocksToSkip);
         await strategy.harvest();
       }
 
@@ -234,8 +226,8 @@ describe('Vaults', function () {
       console.log(`Average APR across ${numHarvests} harvests is ${averageAPR} basis points.`);
     });
   });
-  xdescribe('Strategy', function () {
-    it('should be able to pause and unpause', async function () {
+  describe('Strategy', function () {
+    xit('should be able to pause and unpause', async function () {
       await strategy.pause();
       const depositAmount = toWantUnit('1');
       await expect(vault.connect(wantHolder).deposit(depositAmount)).to.be.reverted;
@@ -244,7 +236,7 @@ describe('Vaults', function () {
       await expect(vault.connect(wantHolder).deposit(depositAmount)).to.not.be.reverted;
     });
 
-    it('should be able to panic', async function () {
+    xit('should be able to panic', async function () {
       const depositAmount = toWantUnit('0.0007');
       await vault.connect(wantHolder).deposit(depositAmount);
       const vaultBalance = await vault.balance();
@@ -256,7 +248,7 @@ describe('Vaults', function () {
       expect(strategyBalance).to.be.closeTo(wantStratBalance, allowedImprecision);
     });
 
-    it('should be able to retire strategy', async function () {
+    xit('should be able to retire strategy', async function () {
       const depositAmount = toWantUnit('100');
       await vault.connect(wantHolder).deposit(depositAmount);
       const vaultBalance = await vault.balance();
@@ -271,12 +263,12 @@ describe('Vaults', function () {
       expect(newStrategyBalance).to.be.lt(allowedImprecision);
     });
 
-    it('should be able to retire strategy with no balance', async function () {
+    xit('should be able to retire strategy with no balance', async function () {
       await expect(strategy.retireStrat()).to.not.be.reverted;
     });
 
     it('should be able to estimate harvest', async function () {
-      const whaleDepositAmount = toWantUnit('1000');
+      const whaleDepositAmount = toWantUnit('20');
       await vault.connect(wantHolder).deposit(whaleDepositAmount);
       await moveBlocksForward(100);
       await strategy.harvest();

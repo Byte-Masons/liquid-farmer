@@ -20,4 +20,8 @@ interface IMasterChef {
     function emergencyWithdraw(uint256 _pid, address user) external;
 
     function harvest(uint256 pid, address user) external;
+
+    function rewarder(uint256) external view returns (address);
+
+    function pendingLqdr(uint256 pid, address user) external view returns (uint256);
 }

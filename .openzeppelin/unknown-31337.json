@@ -8,7 +8,7 @@
     },
     {
       "address": "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f",
-      "txHash": "0xe76e18814d68b7ab925f37c1dd4dcdc387e7cad5143e330b3f6418776add877c",
+      "txHash": "0x38a467ab77d23486782a0d8e600da375115dc220b9e3cf195b533e648e866de6",
       "kind": "uups"
     }
   ],
@@ -808,9 +808,9 @@
         }
       }
     },
-    "5b19aaad0487ff78438ae2b097b02f7c3e96f0260974d718498870f5c4e22545": {
+    "533ee9c934b4d5450b4b79795a24f3ca9fd8fae71bbfcf5bcf897cd2c456c33d": {
       "address": "0x922D6956C99E12DFeB3224DEA977D0939758A1Fe",
-      "txHash": "0x48cc9ebd696d6f3ff68bb6830d08f977dc21266e9f7e883564e8da5e4862e1e1",
+      "txHash": "0x0ccf5e72fb2e3a9f7efa18cf5e79b7278bc2c40a0a7451aa26a97d15a216afe4",
       "layout": {
         "storage": [
           {
@@ -881,7 +881,7 @@
             "label": "_roleMembers",
             "offset": 0,
             "slot": "251",
-            "type": "t_mapping(t_bytes32,t_struct(AddressSet)2587_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(AddressSet)3225_storage)",
             "contract": "AccessControlEnumerableUpgradeable",
             "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlEnumerableUpgradeable.sol:22"
           },
@@ -913,7 +913,7 @@
             "label": "harvestLog",
             "offset": 0,
             "slot": "351",
-            "type": "t_array(t_struct(Harvest)5894_storage)dyn_storage",
+            "type": "t_array(t_struct(Harvest)7100_storage)dyn_storage",
             "contract": "ReaperBaseStrategyv1_1",
             "src": "contracts\\abstract\\ReaperBaseStrategyv1_1.sol:27"
           },
@@ -1006,57 +1006,25 @@
             "src": "contracts\\abstract\\ReaperBaseStrategyv1_1.sol:77"
           },
           {
-            "label": "router",
+            "label": "want",
             "offset": 0,
             "slot": "363",
-            "type": "t_address",
-            "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:20"
-          },
-          {
-            "label": "dualRewardRouter",
-            "offset": 0,
-            "slot": "364",
-            "type": "t_address",
-            "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:21"
-          },
-          {
-            "label": "dualRewardToken",
-            "offset": 0,
-            "slot": "365",
-            "type": "t_address",
-            "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:34"
-          },
-          {
-            "label": "lpToken0",
-            "offset": 0,
-            "slot": "366",
-            "type": "t_address",
-            "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:35"
-          },
-          {
-            "label": "lpToken1",
-            "offset": 0,
-            "slot": "367",
             "type": "t_address",
             "contract": "ReaperStrategyLiquidDriver",
             "src": "contracts\\ReaperStrategyLiquidDriver.sol:36"
           },
           {
-            "label": "want",
+            "label": "wftmToLP0Route",
             "offset": 0,
-            "slot": "368",
-            "type": "t_address",
+            "slot": "364",
+            "type": "t_array(t_address)dyn_storage",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:37"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:44"
           },
           {
-            "label": "dualRewardRoute",
+            "label": "wftmToLP1Route",
             "offset": 0,
-            "slot": "369",
+            "slot": "365",
             "type": "t_array(t_address)dyn_storage",
             "contract": "ReaperStrategyLiquidDriver",
             "src": "contracts\\ReaperStrategyLiquidDriver.sol:45"
@@ -1064,18 +1032,10 @@
           {
             "label": "poolId",
             "offset": 0,
-            "slot": "370",
+            "slot": "366",
             "type": "t_uint256",
             "contract": "ReaperStrategyLiquidDriver",
             "src": "contracts\\ReaperStrategyLiquidDriver.sol:51"
-          },
-          {
-            "label": "useDualRewards",
-            "offset": 0,
-            "slot": "371",
-            "type": "t_bool",
-            "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:52"
           }
         ],
         "types": {
@@ -1091,7 +1051,7 @@
             "label": "bytes32[]",
             "numberOfBytes": "32"
           },
-          "t_array(t_struct(Harvest)5894_storage)dyn_storage": {
+          "t_array(t_struct(Harvest)7100_storage)dyn_storage": {
             "label": "struct ReaperBaseStrategyv1_1.Harvest[]",
             "numberOfBytes": "32"
           },
@@ -1115,7 +1075,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(AddressSet)2587_storage)": {
+          "t_mapping(t_bytes32,t_struct(AddressSet)3225_storage)": {
             "label": "mapping(bytes32 => struct EnumerableSetUpgradeable.AddressSet)",
             "numberOfBytes": "32"
           },
@@ -1127,19 +1087,19 @@
             "label": "mapping(bytes32 => uint256)",
             "numberOfBytes": "32"
           },
-          "t_struct(AddressSet)2587_storage": {
+          "t_struct(AddressSet)3225_storage": {
             "label": "struct EnumerableSetUpgradeable.AddressSet",
             "members": [
               {
                 "label": "_inner",
-                "type": "t_struct(Set)2286_storage",
+                "type": "t_struct(Set)2924_storage",
                 "offset": 0,
                 "slot": "0"
               }
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(Harvest)5894_storage": {
+          "t_struct(Harvest)7100_storage": {
             "label": "struct ReaperBaseStrategyv1_1.Harvest",
             "members": [
               {
@@ -1175,7 +1135,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(Set)2286_storage": {
+          "t_struct(Set)2924_storage": {
             "label": "struct EnumerableSetUpgradeable.Set",
             "members": [
               {
