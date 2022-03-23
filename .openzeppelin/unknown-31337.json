@@ -2,20 +2,15 @@
   "manifestVersion": "3.2",
   "proxies": [
     {
-      "address": "0x83B47FF2a6D82dbB9a927F3a3F039e87785FaE4b",
-      "txHash": "0xee78208aeee2048309545a11db94de74c55822489081c5e166d06b91c48a9d70",
-      "kind": "uups"
-    },
-    {
-      "address": "0x90fC2baF56CaA94637f1Ea8CC3F59F55ae04ed8a",
-      "txHash": "0x01bf2a9615c640c732e2c0629c454d6b0fc61d0e42adf20d750265b11c88ef8e",
+      "address": "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f",
+      "txHash": "0x8904b38bf90fce96861757c5cceea8243929d0ac9b1ed1d145f7cbfa8efcac98",
       "kind": "uups"
     }
   ],
   "impls": {
-    "d80c45ddf00930bd7b684db9a8027fd4121510f7fbe9f2ef725c239d2031c451": {
-      "address": "0x97821Bf4f701f32978Fb2c6C8d16041b530D4B23",
-      "txHash": "0x1cab5db718cbfe546a3ce5c90802b1f4a41b3c20f6d8d754227c9676330a67fa",
+    "caaf621befdf1019eb8b9968327ab7e65e73ca0acd67ed69e11e545b7ad391f6": {
+      "address": "0x922D6956C99E12DFeB3224DEA977D0939758A1Fe",
+      "txHash": "0x70d023818981ec49a9254bc4c9f027450b4ed17e8d962af81d395fa237c5320d",
       "layout": {
         "storage": [
           {
@@ -215,48 +210,48 @@
             "offset": 0,
             "slot": "363",
             "type": "t_address",
-            "contract": "ReaperStrategyLiquidDriverDeus",
-            "src": "contracts\\ReaperStrategyLiquidDriverDeus.sol:37"
+            "contract": "ReaperStrategyLiquidDriverPills",
+            "src": "contracts\\ReaperStrategyLiquidDriverPills.sol:37"
           },
           {
             "label": "lpToken0",
             "offset": 0,
             "slot": "364",
             "type": "t_address",
-            "contract": "ReaperStrategyLiquidDriverDeus",
-            "src": "contracts\\ReaperStrategyLiquidDriverDeus.sol:38"
+            "contract": "ReaperStrategyLiquidDriverPills",
+            "src": "contracts\\ReaperStrategyLiquidDriverPills.sol:38"
           },
           {
             "label": "lpToken1",
             "offset": 0,
             "slot": "365",
             "type": "t_address",
-            "contract": "ReaperStrategyLiquidDriverDeus",
-            "src": "contracts\\ReaperStrategyLiquidDriverDeus.sol:39"
+            "contract": "ReaperStrategyLiquidDriverPills",
+            "src": "contracts\\ReaperStrategyLiquidDriverPills.sol:39"
           },
           {
             "label": "wftmToLP0Route",
             "offset": 0,
             "slot": "366",
             "type": "t_array(t_address)dyn_storage",
-            "contract": "ReaperStrategyLiquidDriverDeus",
-            "src": "contracts\\ReaperStrategyLiquidDriverDeus.sol:46"
+            "contract": "ReaperStrategyLiquidDriverPills",
+            "src": "contracts\\ReaperStrategyLiquidDriverPills.sol:46"
           },
           {
             "label": "wftmToLP1Route",
             "offset": 0,
             "slot": "367",
             "type": "t_array(t_address)dyn_storage",
-            "contract": "ReaperStrategyLiquidDriverDeus",
-            "src": "contracts\\ReaperStrategyLiquidDriverDeus.sol:47"
+            "contract": "ReaperStrategyLiquidDriverPills",
+            "src": "contracts\\ReaperStrategyLiquidDriverPills.sol:47"
           },
           {
             "label": "poolId",
             "offset": 0,
             "slot": "368",
             "type": "t_uint256",
-            "contract": "ReaperStrategyLiquidDriverDeus",
-            "src": "contracts\\ReaperStrategyLiquidDriverDeus.sol:53"
+            "contract": "ReaperStrategyLiquidDriverPills",
+            "src": "contracts\\ReaperStrategyLiquidDriverPills.sol:53"
           }
         ],
         "types": {

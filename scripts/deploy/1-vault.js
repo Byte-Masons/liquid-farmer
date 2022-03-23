@@ -1,7 +1,7 @@
 async function main() {
   const Vault = await ethers.getContractFactory('ReaperVaultv1_4');
 
-  const wantAddress = '0x2599Eba5fD1e49F294C76D034557948034d6C96E';
+  const wantAddress = '0x9C775D3D66167685B2A3F4567B548567D2875350';
   const tokenName = 'FTM-DEUS Spirit LiquidV2 Crypt';
   const tokenSymbol = 'rf-FTM-DEUS-l-s';
   const depositFee = 0;
