@@ -4,8 +4,9 @@ async function main() {
 
   const Vault = await ethers.getContractFactory('ReaperVaultv1_4');
   const vault = Vault.attach(vaultAddress);
+  const options = {gasPrice: 200000000000, gasLimit: 9000000};
 
-  await vault.initialize(strategyAddress);
+  await vault.initialize(strategyAddress, options);
   console.log('Vault initialized');
 }
 

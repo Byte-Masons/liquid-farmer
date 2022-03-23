@@ -8,7 +8,7 @@
     },
     {
       "address": "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f",
-      "txHash": "0xfde95040beec24eb95bb3b8832c8e7472b8d161241e120e077a98680a2243fe2",
+      "txHash": "0xdb6feb6f94560ea8d00da12addf7c838711fce5f8189d44dfbd889a5b73a6203",
       "kind": "uups"
     }
   ],
@@ -808,9 +808,9 @@
         }
       }
     },
-    "9b8c06e15073df172f8a5ab52f73cf4cc72322e255abb4930e500d56579030a5": {
+    "45844883b81a30cec1b976b43a769c329a5afd7645294888c1a7b0a356033ff9": {
       "address": "0x922D6956C99E12DFeB3224DEA977D0939758A1Fe",
-      "txHash": "0x7f773e1895626e4de5313a9b6af8652d1046435d8806dded644cf5954cb45c15",
+      "txHash": "0x2dc5f4a1ba91dcf44dd81ee2e65391bb97678aee95f970ef62ee18ba23ed2d36",
       "layout": {
         "storage": [
           {
@@ -913,7 +913,7 @@
             "label": "harvestLog",
             "offset": 0,
             "slot": "351",
-            "type": "t_array(t_struct(Harvest)7133_storage)dyn_storage",
+            "type": "t_array(t_struct(Harvest)7191_storage)dyn_storage",
             "contract": "ReaperBaseStrategyv1_1",
             "src": "contracts\\abstract\\ReaperBaseStrategyv1_1.sol:27"
           },
@@ -1011,7 +1011,7 @@
             "slot": "363",
             "type": "t_address",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:36"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:35"
           },
           {
             "label": "wftmToLP0Route",
@@ -1019,7 +1019,7 @@
             "slot": "364",
             "type": "t_array(t_address)dyn_storage",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:44"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:42"
           },
           {
             "label": "wftmToLP1Route",
@@ -1027,7 +1027,7 @@
             "slot": "365",
             "type": "t_array(t_address)dyn_storage",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:45"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:43"
           },
           {
             "label": "poolId",
@@ -1035,7 +1035,7 @@
             "slot": "366",
             "type": "t_uint256",
             "contract": "ReaperStrategyLiquidDriver",
-            "src": "contracts\\ReaperStrategyLiquidDriver.sol:51"
+            "src": "contracts\\ReaperStrategyLiquidDriver.sol:49"
           }
         ],
         "types": {
@@ -1051,7 +1051,7 @@
             "label": "bytes32[]",
             "numberOfBytes": "32"
           },
-          "t_array(t_struct(Harvest)7133_storage)dyn_storage": {
+          "t_array(t_struct(Harvest)7191_storage)dyn_storage": {
             "label": "struct ReaperBaseStrategyv1_1.Harvest[]",
             "numberOfBytes": "32"
           },
@@ -1099,7 +1099,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(Harvest)7133_storage": {
+          "t_struct(Harvest)7191_storage": {
             "label": "struct ReaperBaseStrategyv1_1.Harvest",
             "members": [
               {

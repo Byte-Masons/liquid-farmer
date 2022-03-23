@@ -249,7 +249,7 @@ describe('Vaults', function () {
     });
 
     xit('should be able to retire strategy', async function () {
-      const depositAmount = toWantUnit('100');
+      const depositAmount = toWantUnit('20');
       await vault.connect(wantHolder).deposit(depositAmount);
       const vaultBalance = await vault.balance();
       const strategyBalance = await strategy.balanceOf();
@@ -263,7 +263,7 @@ describe('Vaults', function () {
       expect(newStrategyBalance).to.be.lt(allowedImprecision);
     });
 
-    xit('should be able to retire strategy with no balance', async function () {
+    it('should be able to retire strategy with no balance', async function () {
       await expect(strategy.retireStrat()).to.not.be.reverted;
     });
 
