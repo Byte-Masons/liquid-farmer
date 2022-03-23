@@ -1,10 +1,10 @@
 async function main() {
-  const vaultAddress = '0xe040634Ce403341eB5BfF36B88A1Cd2dF665773a';
-  const strategyAddress = '0x6E3e3e8824A4CB6FAbcBBe50705E595FD8FfD1F7';
+  const vaultAddress = '0x36F7Ed9A8ce0B5004b80079947823Fe189A10a3D';
+  const strategyAddress = '0x90fC2baF56CaA94637f1Ea8CC3F59F55ae04ed8a';
 
   const Vault = await ethers.getContractFactory('ReaperVaultv1_4');
   const vault = Vault.attach(vaultAddress);
-  const options = {gasPrice: 200000000000, gasLimit: 9000000};
+  const options = {gasPrice: 300000000000, gasLimit: 9000000};
 
   await vault.initialize(strategyAddress, options);
   console.log('Vault initialized');
