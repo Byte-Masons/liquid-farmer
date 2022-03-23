@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 
 import "./abstract/ReaperBaseStrategyv1_1.sol";
 import "./interfaces/IMasterChef.sol";
-import "./interfaces/IDeusRewarder.sol";
 import "./interfaces/IUniswapV2Router02.sol";
 import './interfaces/IUniswapV2Pair.sol';
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
@@ -113,7 +112,7 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
     }
 
     /**
-     * @dev Core harvest function. Swaps {LQDR} and {DEUS} balances into {WFTM}.
+     * @dev Core harvest function. Swaps {LQDR} balances into {WFTM}.
      */
     function _swapRewards() internal {
         uint256 lqdrBal = IERC20Upgradeable(LQDR).balanceOf(address(this));
@@ -216,7 +215,6 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
      */
     function estimateHarvest() external view override returns (uint256 profit, uint256 callFeeToUser) {
         IMasterChef masterChef = IMasterChef(MASTER_CHEF);
-        IDeusRewarder rewarder = IDeusRewarder(masterChef.rewarder(poolId));
 
         // {LQDR} reward
         uint256 pendingReward = masterChef.pendingLqdr(poolId, address(this));
@@ -260,7 +258,6 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
      * @dev Gives all the necessary allowances to:
      *      - deposit {want} into {MASTER_CHEF}
      *      - swap {LQDR} using {SPIRIT_ROUTER}
-     *      - swap {DEUS} using {SPIRIT_ROUTER}
      *      - swap {WFTM} using {SPIRIT_ROUTER}
      *      - add liquidity using {lpToken0} and {lpToken1} in {SPIRIT_ROUTER}
      */
