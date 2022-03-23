@@ -41,10 +41,10 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
     /**
      * @dev Paths used to swap tokens:
      * {wftmToLP0Route} - to swap {WFTM} to {lpToken0} (using SPIRIT_ROUTER)
-     * {wftmToLP1Route} - to swap {WFTM} to {lpToken1} (using SPIRIT_ROUTER)
+     * {toLP1Route} - to swap {x} to {lpToken1} (using SPIRIT_ROUTER)
      */
     address[] public wftmToLP0Route;
-    address[] public wftmToLP1Route;
+    address[] public toLP1Route;
 
     /**
      * @dev Strategy variables
@@ -72,7 +72,7 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
 
         // Default paths that can be overridden
         wftmToLP0Route = [WFTM, lpToken0];
-        wftmToLP1Route = [WFTM, lpToken1];
+        toLP1Route = [lpToken0, lpToken1];
 
         _giveAllowances();
     }
@@ -175,14 +175,12 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
      * @dev Core harvest function. Adds more liquidity using {lpToken0} and {lpToken1}.
      */
     function _addLiquidity() internal {
-        uint256 wftmBalHalf = IERC20Upgradeable(WFTM).balanceOf(address(this)) / 2;
+        uint256 wftmBal = IERC20Upgradeable(WFTM).balanceOf(address(this));
 
-        if (lpToken0 != WFTM) {
-            _swap(wftmBalHalf, wftmToLP0Route);
-        }
-        if (lpToken1 != WFTM) {
-            _swap(wftmBalHalf, wftmToLP1Route);
-        }
+        _swap(wftmBal, wftmToLP0Route);
+        uint256 lp0BalHalf = IERC20Upgradeable(lpToken0).balanceOf(address(this)) / 2;
+        _swap(lp0BalHalf, toLP1Route);
+
         uint256 lp0Bal = IERC20Upgradeable(lpToken0).balanceOf(address(this));
         uint256 lp1Bal = IERC20Upgradeable(lpToken1).balanceOf(address(this));
 
@@ -345,12 +343,11 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
         wftmToLP0Route = _route;
     }
 
-    function setWftmToLP1Route(
+    function setToLP1Route(
         address[] memory _route
     ) external {
         _onlyStrategistOrOwner();
-        require(WFTM == _route[0], "Incorrect path");
         require(lpToken1 == _route[_route.length - 1], "Incorrect path");
-        wftmToLP1Route = _route;
+        toLP1Route = _route;
     }
 }
