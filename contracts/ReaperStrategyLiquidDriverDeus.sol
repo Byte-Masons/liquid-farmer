@@ -15,7 +15,7 @@ import "hardhat/console.sol";
 /**
  * @dev Deposit LP in MasterChef to harvest and compound rewards.
  */
-contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
+contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     // 3rd-party contract addresses
