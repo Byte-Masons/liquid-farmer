@@ -10,12 +10,10 @@ import './interfaces/IUniswapV2Pair.sol';
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
 
-import "hardhat/console.sol";
-
 /**
  * @dev Deposit LP in MasterChef to harvest and compound rewards.
  */
-contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
+contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     // 3rd-party contract addresses
@@ -26,14 +24,12 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
      * @dev Tokens Used:
      * {WFTM} - Required for liquidity routing when doing swaps.
      * {LQDR} - Reward token.
-     * {DEUS} - Dual reward token.
      * {want} - Address of LP token.
      * {lpToken0} - Token 0 of the LP.
      * {lpToken1} - Token 1 of the LP.
      */
     address public constant WFTM = address(0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83);
     address public constant LQDR = address(0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9);
-    address public constant DEUS = address(0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44);
     address public want;
     address public lpToken0;
     address public lpToken1;
@@ -125,11 +121,6 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
         lqdrToWftmPath[0] = LQDR;
         lqdrToWftmPath[1] = WFTM;
         _swap(lqdrBal, lqdrToWftmPath);
-        uint256 deusBal = IERC20Upgradeable(DEUS).balanceOf(address(this));
-        address[] memory deusToWftmPath = new address[](2);
-        deusToWftmPath[0] = DEUS;
-        deusToWftmPath[1] = WFTM;
-        _swap(deusBal, deusToWftmPath);
     }
 
     /**
@@ -237,16 +228,6 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
             profit += IUniswapV2Router02(SPIRIT_ROUTER).getAmountsOut(totalRewards, lqdrToWftmPath)[1];
         }
 
-        // {DEUS} reward
-        pendingReward = rewarder.pendingToken(poolId, address(this));
-        totalRewards = pendingReward + IERC20Upgradeable(DEUS).balanceOf(address(this));
-        if (totalRewards != 0) {
-            address[] memory deusToWftmPath = new address[](2);
-            deusToWftmPath[0] = DEUS;
-            deusToWftmPath[1] = WFTM;
-            profit += IUniswapV2Router02(SPIRIT_ROUTER).getAmountsOut(totalRewards, deusToWftmPath)[1];
-        }
-
         profit += IERC20Upgradeable(WFTM).balanceOf(address(this));
 
         uint256 wftmFee = (profit * totalFee) / PERCENT_DIVISOR;
@@ -290,9 +271,6 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
         // LQDR -> SPIRIT_ROUTER
         uint256 lqdrAllowance = type(uint256).max - IERC20Upgradeable(LQDR).allowance(address(this), SPIRIT_ROUTER);
         IERC20Upgradeable(LQDR).safeIncreaseAllowance(SPIRIT_ROUTER, lqdrAllowance);
-        // DEUS -> SPIRIT_ROUTER
-        uint256 deusAllowance = type(uint256).max - IERC20Upgradeable(DEUS).allowance(address(this), SPIRIT_ROUTER);
-        IERC20Upgradeable(DEUS).safeIncreaseAllowance(SPIRIT_ROUTER, deusAllowance);
         // WFTM -> SPIRIT_ROUTER
         uint256 wftmAllowance = type(uint256).max - IERC20Upgradeable(WFTM).allowance(address(this), SPIRIT_ROUTER);
         IERC20Upgradeable(WFTM).safeIncreaseAllowance(SPIRIT_ROUTER, wftmAllowance);
@@ -317,10 +295,6 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
             SPIRIT_ROUTER,
             IERC20Upgradeable(LQDR).allowance(address(this), SPIRIT_ROUTER)
         );
-        IERC20Upgradeable(DEUS).safeDecreaseAllowance(
-                SPIRIT_ROUTER,
-                IERC20Upgradeable(DEUS).allowance(address(this), SPIRIT_ROUTER)
-            );
         IERC20Upgradeable(WFTM).safeDecreaseAllowance(
             SPIRIT_ROUTER,
             IERC20Upgradeable(WFTM).allowance(address(this), SPIRIT_ROUTER)
