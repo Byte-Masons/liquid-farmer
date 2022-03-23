@@ -178,16 +178,10 @@ contract ReaperStrategyLiquidDriverDeus is ReaperBaseStrategyv1_1 {
         uint256 wftmBalHalf = IERC20Upgradeable(WFTM).balanceOf(address(this)) / 2;
 
         if (lpToken0 != WFTM) {
-            address[] memory wftmToLP0Path = new address[](2);
-            wftmToLP0Path[0] = WFTM;
-            wftmToLP0Path[1] = lpToken0;
-            _swap(wftmBalHalf, wftmToLP0Path);
+            _swap(wftmBalHalf, wftmToLP0Route);
         }
         if (lpToken1 != WFTM) {
-            address[] memory wftmToLP1Path = new address[](2);
-            wftmToLP1Path[0] = WFTM;
-            wftmToLP1Path[1] = lpToken1;
-            _swap(wftmBalHalf, wftmToLP1Path);
+            _swap(wftmBalHalf, wftmToLP1Route);
         }
         uint256 lp0Bal = IERC20Upgradeable(lpToken0).balanceOf(address(this));
         uint256 lp1Bal = IERC20Upgradeable(lpToken1).balanceOf(address(this));
