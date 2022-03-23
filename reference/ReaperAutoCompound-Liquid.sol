@@ -25,7 +25,6 @@ abstract contract Context {
 
 // File: @openzeppelin/contracts/access/Ownable.sol
 
-
 pragma solidity ^0.6.0;
 
 /**
@@ -48,7 +47,7 @@ contract Ownable is Context {
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
-    constructor () internal {
+    constructor() internal {
         address msgSender = _msgSender();
         _owner = msgSender;
         emit OwnershipTransferred(address(0), msgSender);
@@ -93,7 +92,6 @@ contract Ownable is Context {
 }
 
 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
-
 
 pragma solidity ^0.6.0;
 
@@ -154,7 +152,11 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
 
     /**
      * @dev Emitted when `value` tokens are moved from one account (`from`) to
@@ -172,7 +174,6 @@ interface IERC20 {
 }
 
 // File: @openzeppelin/contracts/math/SafeMath.sol
-
 
 pragma solidity ^0.6.0;
 
@@ -231,7 +232,11 @@ library SafeMath {
      *
      * - Subtraction cannot overflow.
      */
-    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function sub(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b <= a, errorMessage);
         uint256 c = a - b;
 
@@ -290,7 +295,11 @@ library SafeMath {
      *
      * - The divisor cannot be zero.
      */
-    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function div(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b > 0, errorMessage);
         uint256 c = a / b;
         // assert(a == b * c + a % b); // There is no case in which this doesn't hold
@@ -326,14 +335,17 @@ library SafeMath {
      *
      * - The divisor cannot be zero.
      */
-    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
+    function mod(
+        uint256 a,
+        uint256 b,
+        string memory errorMessage
+    ) internal pure returns (uint256) {
         require(b != 0, errorMessage);
         return a % b;
     }
 }
 
 // File: @openzeppelin/contracts/utils/Address.sol
-
 
 pragma solidity ^0.6.2;
 
@@ -365,7 +377,9 @@ library Address {
 
         uint256 size;
         // solhint-disable-next-line no-inline-assembly
-        assembly { size := extcodesize(account) }
+        assembly {
+            size := extcodesize(account)
+        }
         return size > 0;
     }
 
@@ -389,7 +403,7 @@ library Address {
         require(address(this).balance >= amount, "Address: insufficient balance");
 
         // solhint-disable-next-line avoid-low-level-calls, avoid-call-value
-        (bool success, ) = recipient.call{ value: amount }("");
+        (bool success, ) = recipient.call{value: amount}("");
         require(success, "Address: unable to send value, recipient may have reverted");
     }
 
@@ -412,7 +426,7 @@ library Address {
      * _Available since v3.1._
      */
     function functionCall(address target, bytes memory data) internal returns (bytes memory) {
-      return functionCall(target, data, "Address: low-level call failed");
+        return functionCall(target, data, "Address: low-level call failed");
     }
 
     /**
@@ -421,7 +435,11 @@ library Address {
      *
      * _Available since v3.1._
      */
-    function functionCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
+    function functionCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
         return _functionCallWithValue(target, data, 0, errorMessage);
     }
 
@@ -436,7 +454,11 @@ library Address {
      *
      * _Available since v3.1._
      */
-    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) internal returns (bytes memory) {
         return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
     }
 
@@ -446,16 +468,26 @@ library Address {
      *
      * _Available since v3.1._
      */
-    function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage) internal returns (bytes memory) {
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
         require(address(this).balance >= value, "Address: insufficient balance for call");
         return _functionCallWithValue(target, data, value, errorMessage);
     }
 
-    function _functionCallWithValue(address target, bytes memory data, uint256 weiValue, string memory errorMessage) private returns (bytes memory) {
+    function _functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 weiValue,
+        string memory errorMessage
+    ) private returns (bytes memory) {
         require(isContract(target), "Address: call to non-contract");
 
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returndata) = target.call{ value: weiValue }(data);
+        (bool success, bytes memory returndata) = target.call{value: weiValue}(data);
         if (success) {
             return returndata;
         } else {
@@ -477,12 +509,7 @@ library Address {
 
 // File: @openzeppelin/contracts/token/ERC20/ERC20.sol
 
-
 pragma solidity ^0.6.0;
-
-
-
-
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -512,9 +539,9 @@ contract ERC20 is Context, IERC20 {
     using SafeMath for uint256;
     using Address for address;
 
-    mapping (address => uint256) private _balances;
+    mapping(address => uint256) private _balances;
 
-    mapping (address => mapping (address => uint256)) private _allowances;
+    mapping(address => mapping(address => uint256)) private _allowances;
 
     uint256 private _totalSupply;
 
@@ -531,7 +558,7 @@ contract ERC20 is Context, IERC20 {
      * All three of these values are immutable: they can only be set once during
      * construction.
      */
-    constructor (string memory name, string memory symbol) public {
+    constructor(string memory name, string memory symbol) public {
         _name = name;
         _symbol = symbol;
         _decimals = 18;
@@ -627,9 +654,17 @@ contract ERC20 is Context, IERC20 {
      * - the caller must have allowance for ``sender``'s tokens of at least
      * `amount`.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) public virtual override returns (bool) {
         _transfer(sender, recipient, amount);
-        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
+        _approve(
+            sender,
+            _msgSender(),
+            _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance")
+        );
         return true;
     }
 
@@ -665,7 +700,11 @@ contract ERC20 is Context, IERC20 {
      * `subtractedValue`.
      */
     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
+        _approve(
+            _msgSender(),
+            spender,
+            _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero")
+        );
         return true;
     }
 
@@ -683,7 +722,11 @@ contract ERC20 is Context, IERC20 {
      * - `recipient` cannot be the zero address.
      * - `sender` must have a balance of at least `amount`.
      */
-    function _transfer(address sender, address recipient, uint256 amount) internal virtual {
+    function _transfer(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal virtual {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
@@ -747,7 +790,11 @@ contract ERC20 is Context, IERC20 {
      * - `owner` cannot be the zero address.
      * - `spender` cannot be the zero address.
      */
-    function _approve(address owner, address spender, uint256 amount) internal virtual {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 amount
+    ) internal virtual {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
 
@@ -780,16 +827,16 @@ contract ERC20 is Context, IERC20 {
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual {}
 }
 
 // File: @openzeppelin/contracts/token/ERC20/SafeERC20.sol
 
-
 pragma solidity ^0.6.0;
-
-
-
 
 /**
  * @title SafeERC20
@@ -804,11 +851,20 @@ library SafeERC20 {
     using SafeMath for uint256;
     using Address for address;
 
-    function safeTransfer(IERC20 token, address to, uint256 value) internal {
+    function safeTransfer(
+        IERC20 token,
+        address to,
+        uint256 value
+    ) internal {
         _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
     }
 
-    function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
+    function safeTransferFrom(
+        IERC20 token,
+        address from,
+        address to,
+        uint256 value
+    ) internal {
         _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
     }
 
@@ -819,24 +875,40 @@ library SafeERC20 {
      * Whenever possible, use {safeIncreaseAllowance} and
      * {safeDecreaseAllowance} instead.
      */
-    function safeApprove(IERC20 token, address spender, uint256 value) internal {
+    function safeApprove(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
         // safeApprove should only be called when setting an initial allowance,
         // or when resetting it to zero. To increase and decrease it, use
         // 'safeIncreaseAllowance' and 'safeDecreaseAllowance'
         // solhint-disable-next-line max-line-length
-        require((value == 0) || (token.allowance(address(this), spender) == 0),
+        require(
+            (value == 0) || (token.allowance(address(this), spender) == 0),
             "SafeERC20: approve from non-zero to non-zero allowance"
         );
         _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
     }
 
-    function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
+    function safeIncreaseAllowance(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
         uint256 newAllowance = token.allowance(address(this), spender).add(value);
         _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
     }
 
-    function safeDecreaseAllowance(IERC20 token, address spender, uint256 value) internal {
-        uint256 newAllowance = token.allowance(address(this), spender).sub(value, "SafeERC20: decreased allowance below zero");
+    function safeDecreaseAllowance(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
+        uint256 newAllowance = token.allowance(address(this), spender).sub(
+            value,
+            "SafeERC20: decreased allowance below zero"
+        );
         _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
     }
 
@@ -852,7 +924,8 @@ library SafeERC20 {
         // the target address contains contract code and also asserts for success in the low-level call.
 
         bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
-        if (returndata.length > 0) { // Return data is optional
+        if (returndata.length > 0) {
+            // Return data is optional
             // solhint-disable-next-line max-line-length
             require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
         }
@@ -861,9 +934,7 @@ library SafeERC20 {
 
 // File: @openzeppelin/contracts/utils/Pausable.sol
 
-
 pragma solidity ^0.6.0;
-
 
 /**
  * @dev Contract module which allows children to implement an emergency stop
@@ -890,7 +961,7 @@ contract Pausable is Context {
     /**
      * @dev Initializes the contract in unpaused state.
      */
-    constructor () internal {
+    constructor() internal {
         _paused = false;
     }
 
@@ -956,58 +1027,77 @@ interface IUniswapRouterETH {
     function addLiquidity(
         address tokenA,
         address tokenB,
-        uint amountADesired,
-        uint amountBDesired,
-        uint amountAMin,
-        uint amountBMin,
+        uint256 amountADesired,
+        uint256 amountBDesired,
+        uint256 amountAMin,
+        uint256 amountBMin,
         address to,
-        uint deadline
-    ) external returns (uint amountA, uint amountB, uint liquidity);
+        uint256 deadline
+    )
+        external
+        returns (
+            uint256 amountA,
+            uint256 amountB,
+            uint256 liquidity
+        );
 
     function addLiquidityETH(
         address token,
-        uint amountTokenDesired,
-        uint amountTokenMin,
-        uint amountETHMin,
+        uint256 amountTokenDesired,
+        uint256 amountTokenMin,
+        uint256 amountETHMin,
         address to,
-        uint deadline
-    ) external payable returns (uint amountToken, uint amountETH, uint liquidity);
+        uint256 deadline
+    )
+        external
+        payable
+        returns (
+            uint256 amountToken,
+            uint256 amountETH,
+            uint256 liquidity
+        );
 
     function removeLiquidity(
         address tokenA,
         address tokenB,
-        uint liquidity,
-        uint amountAMin,
-        uint amountBMin,
+        uint256 liquidity,
+        uint256 amountAMin,
+        uint256 amountBMin,
         address to,
-        uint deadline
-    ) external returns (uint amountA, uint amountB);
+        uint256 deadline
+    ) external returns (uint256 amountA, uint256 amountB);
 
     function removeLiquidityETH(
         address token,
-        uint liquidity,
-        uint amountTokenMin,
-        uint amountETHMin,
+        uint256 liquidity,
+        uint256 amountTokenMin,
+        uint256 amountETHMin,
         address to,
-        uint deadline
-    ) external returns (uint amountToken, uint amountETH);
+        uint256 deadline
+    ) external returns (uint256 amountToken, uint256 amountETH);
 
     function swapExactTokensForTokens(
-        uint amountIn,
-        uint amountOutMin,
+        uint256 amountIn,
+        uint256 amountOutMin,
         address[] calldata path,
         address to,
-        uint deadline
-    ) external returns (uint[] memory amounts);
+        uint256 deadline
+    ) external returns (uint256[] memory amounts);
 
-    function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)
-        external
-        payable
-        returns (uint[] memory amounts);
+    function swapExactETHForTokens(
+        uint256 amountOutMin,
+        address[] calldata path,
+        address to,
+        uint256 deadline
+    ) external payable returns (uint256[] memory amounts);
 
-    function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
-        external
-        returns (uint[] memory amounts);
+    function swapExactTokensForETH(
+        uint256 amountIn,
+        uint256 amountOutMin,
+        address[] calldata path,
+        address to,
+        uint256 deadline
+    ) external returns (uint256[] memory amounts);
 
     function swapExactTokensForTokensSupportingFeeOnTransferTokens(
         uint256 amountIn,
@@ -1022,6 +1112,7 @@ pragma solidity ^0.6.0;
 
 interface IUniswapV2Pair {
     function token0() external view returns (address);
+
     function token1() external view returns (address);
 }
 
@@ -1029,13 +1120,21 @@ pragma solidity ^0.6.0;
 
 interface IMasterChef {
     function poolLength() external view returns (uint256);
+
     function getMultiplier(uint256 _from, uint256 _to) external view returns (uint256);
+
     function pendingSpirit(uint256 _pid, address _user) external view returns (uint256);
+
     function massUpdatePools() external;
+
     function updatePool(uint256 _pid) external;
+
     function deposit(uint256 _pid, uint256 _amount) external;
+
     function withdraw(uint256 _pid, uint256 _amount) external;
+
     function userInfo(uint256 _pid, address _user) external view returns (uint256, uint256);
+
     function emergencyWithdraw(uint256 _pid) external;
 }
 
@@ -1087,7 +1186,7 @@ contract ReaperAutoCompoundLiquid is Ownable, Pausable {
     address public treasury;
     address public vault;
 
-     /**
+    /**
      * @dev Distribution of fees earned. This allocations relative to the % implemented on
      * Current implementation separates 5% for fees. Can be changed through the constructor
      * Inputs in constructor should be ratios between the Fee and Max Fee, divisble into percents by 10000
@@ -1104,12 +1203,12 @@ contract ReaperAutoCompoundLiquid is Ownable, Pausable {
      * {PERCENT_DIVISOR} - Constant used to safely calculate the correct percentages.
      */
 
-    uint public callFee = 1000;
-    uint public treasuryFee = 9000;
-    uint public securityFee = 10;
-    uint public totalFee = 450;
-    uint constant public MAX_FEE = 500;
-    uint constant  public PERCENT_DIVISOR = 10000;
+    uint256 public callFee = 1000;
+    uint256 public treasuryFee = 9000;
+    uint256 public securityFee = 10;
+    uint256 public totalFee = 450;
+    uint256 public constant MAX_FEE = 500;
+    uint256 public constant PERCENT_DIVISOR = 10000;
 
     /**
      * @dev Routes we take to swap tokens using PanrewardTokenSwap.
@@ -1127,18 +1226,18 @@ contract ReaperAutoCompoundLiquid is Ownable, Pausable {
      * {CallFeeUpdated} Event that is fired each time the call fee is updated.
      */
     event StratHarvest(address indexed harvester);
-    event TotalFeeUpdated(uint newFee);
-    event CallFeeUpdated(uint newCallFee, uint newTreasuryFee);
+    event TotalFeeUpdated(uint256 newFee);
+    event CallFeeUpdated(uint256 newCallFee, uint256 newTreasuryFee);
 
     /**
      * @dev Initializes the strategy. Sets parameters, saves routes, and gives allowances.
      * @notice see documentation for each variable above its respective declaration.
      */
-    constructor (
-      address _lpPair,
-      uint8 _poolId,
-      address _vault,
-      address _treasury
+    constructor(
+        address _lpPair,
+        uint8 _poolId,
+        address _vault,
+        address _treasury
     ) public {
         lpPair = _lpPair;
         poolId = _poolId;
@@ -1198,7 +1297,6 @@ contract ReaperAutoCompoundLiquid is Ownable, Pausable {
         IERC20(lpPair).safeTransfer(vault, pairBal.sub(withdrawFee));
     }
 
-
     /**
      * @dev Core function of the strat, in charge of collecting and re-investing rewards.
      * 1. It claims rewards from the masterChef.
@@ -1224,7 +1322,13 @@ contract ReaperAutoCompoundLiquid is Ownable, Pausable {
      */
     function chargeFees() internal {
         uint256 toWftm = IERC20(rewardToken).balanceOf(address(this)).mul(totalFee).div(PERCENT_DIVISOR);
-        IUniswapRouterETH(uniRouter).swapExactTokensForTokensSupportingFeeOnTransferTokens(toWftm, 0, rewardTokenToWftmRoute, address(this), now.add(600));
+        IUniswapRouterETH(uniRouter).swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            toWftm,
+            0,
+            rewardTokenToWftmRoute,
+            address(this),
+            now.add(600)
+        );
 
         uint256 wftmBal = IERC20(wftm).balanceOf(address(this));
 
@@ -1242,15 +1346,36 @@ contract ReaperAutoCompoundLiquid is Ownable, Pausable {
         uint256 rewardTokenHalf = IERC20(rewardToken).balanceOf(address(this)).div(2);
 
         if (lpToken0 != rewardToken) {
-            IUniswapRouterETH(uniRouter).swapExactTokensForTokensSupportingFeeOnTransferTokens(rewardTokenHalf, 0, rewardTokenToLp0Route, address(this), now.add(600));
+            IUniswapRouterETH(uniRouter).swapExactTokensForTokensSupportingFeeOnTransferTokens(
+                rewardTokenHalf,
+                0,
+                rewardTokenToLp0Route,
+                address(this),
+                now.add(600)
+            );
         }
 
         if (lpToken1 != rewardToken) {
-            IUniswapRouterETH(uniRouter).swapExactTokensForTokensSupportingFeeOnTransferTokens(rewardTokenHalf, 0, rewardTokenToLp1Route, address(this), now.add(600));
+            IUniswapRouterETH(uniRouter).swapExactTokensForTokensSupportingFeeOnTransferTokens(
+                rewardTokenHalf,
+                0,
+                rewardTokenToLp1Route,
+                address(this),
+                now.add(600)
+            );
         }
         uint256 lp0Bal = IERC20(lpToken0).balanceOf(address(this));
         uint256 lp1Bal = IERC20(lpToken1).balanceOf(address(this));
-        IUniswapRouterETH(uniRouter).addLiquidity(lpToken0, lpToken1, lp0Bal, lp1Bal, 1, 1, address(this), now.add(600));
+        IUniswapRouterETH(uniRouter).addLiquidity(
+            lpToken0,
+            lpToken1,
+            lp0Bal,
+            lp1Bal,
+            1,
+            1,
+            address(this),
+            now.add(600)
+        );
     }
 
     /**
@@ -1301,8 +1426,8 @@ contract ReaperAutoCompoundLiquid is Ownable, Pausable {
      * @dev Pauses the strat.
      */
     function pause() public onlyOwner {
-      _pause();
-      removeAllowances();
+        _pause();
+        removeAllowances();
     }
 
     /**
@@ -1337,25 +1462,25 @@ contract ReaperAutoCompoundLiquid is Ownable, Pausable {
     /**
      * @dev updates the total fee, capped at 5%
      */
-    function updateTotalFee(uint _totalFee) external onlyOwner returns (bool) {
-      require(_totalFee <= MAX_FEE, "Fee Too High");
-      totalFee = _totalFee;
-      emit TotalFeeUpdated(totalFee);
-      return true;
+    function updateTotalFee(uint256 _totalFee) external onlyOwner returns (bool) {
+        require(_totalFee <= MAX_FEE, "Fee Too High");
+        totalFee = _totalFee;
+        emit TotalFeeUpdated(totalFee);
+        return true;
     }
 
     /**
      * @dev updates the call fee and adjusts the treasury fee to cover the difference
      */
-    function updateCallFee(uint _callFee) external onlyOwner returns (bool) {
-      callFee = _callFee;
-      treasuryFee = PERCENT_DIVISOR.sub(callFee);
-      emit CallFeeUpdated(callFee, treasuryFee);
-      return true;
+    function updateCallFee(uint256 _callFee) external onlyOwner returns (bool) {
+        callFee = _callFee;
+        treasuryFee = PERCENT_DIVISOR.sub(callFee);
+        emit CallFeeUpdated(callFee, treasuryFee);
+        return true;
     }
 
     function updateTreasury(address newTreasury) external onlyOwner returns (bool) {
-      treasury = newTreasury;
-      return true;
+        treasury = newTreasury;
+        return true;
     }
 }

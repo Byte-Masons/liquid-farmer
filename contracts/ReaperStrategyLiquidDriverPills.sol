@@ -6,11 +6,9 @@ import "./abstract/ReaperBaseStrategyv1_1.sol";
 import "./interfaces/IMasterChef.sol";
 import "./interfaces/IDeusRewarder.sol";
 import "./interfaces/IUniswapV2Router02.sol";
-import './interfaces/IUniswapV2Pair.sol';
+import "./interfaces/IUniswapV2Pair.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
-
-import "hardhat/console.sol";
 
 /**
  * @dev Deposit LP in MasterChef to harvest and compound rewards.
@@ -135,10 +133,7 @@ contract ReaperStrategyLiquidDriverPills is ReaperBaseStrategyv1_1 {
     /**
      * @dev Helper function to swap tokens given an {_amount}, swap {_path}.
      */
-    function _swap(
-        uint256 _amount,
-        address[] memory _path
-    ) internal {
+    function _swap(uint256 _amount, address[] memory _path) internal {
         if (_path.length < 2 || _amount == 0) {
             return;
         }
@@ -318,9 +313,9 @@ contract ReaperStrategyLiquidDriverPills is ReaperBaseStrategyv1_1 {
             IERC20Upgradeable(LQDR).allowance(address(this), SPIRIT_ROUTER)
         );
         IERC20Upgradeable(PILLS).safeDecreaseAllowance(
-                SPIRIT_ROUTER,
-                IERC20Upgradeable(PILLS).allowance(address(this), SPIRIT_ROUTER)
-            );
+            SPIRIT_ROUTER,
+            IERC20Upgradeable(PILLS).allowance(address(this), SPIRIT_ROUTER)
+        );
         IERC20Upgradeable(WFTM).safeDecreaseAllowance(
             SPIRIT_ROUTER,
             IERC20Upgradeable(WFTM).allowance(address(this), SPIRIT_ROUTER)
@@ -336,18 +331,14 @@ contract ReaperStrategyLiquidDriverPills is ReaperBaseStrategyv1_1 {
         );
     }
 
-    function setWftmToLP0Route(
-        address[] memory _route
-    ) external {
+    function setWftmToLP0Route(address[] memory _route) external {
         _onlyStrategistOrOwner();
         require(WFTM == _route[0], "Incorrect path");
         require(lpToken0 == _route[_route.length - 1], "Incorrect path");
         wftmToLP0Route = _route;
     }
 
-    function setWftmToLP1Route(
-        address[] memory _route
-    ) external {
+    function setWftmToLP1Route(address[] memory _route) external {
         _onlyStrategistOrOwner();
         require(WFTM == _route[0], "Incorrect path");
         require(lpToken1 == _route[_route.length - 1], "Incorrect path");
