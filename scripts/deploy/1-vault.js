@@ -1,9 +1,9 @@
 async function main() {
   const Vault = await ethers.getContractFactory('ReaperVaultv1_4');
 
-  const wantAddress = '0x2599Eba5fD1e49F294C76D034557948034d6C96E';
-  const tokenName = 'FTM-DEUS Spirit LiquidV2 Crypt';
-  const tokenSymbol = 'rf-FTM-DEUS-l-s';
+  const wantAddress = '0x51eb93ecfeffbb2f6fe6106c4491b5a0b944e8bd';
+  const tokenName = 'FTM-MAI Spirit LiquidV2 Crypt';
+  const tokenSymbol = 'rf-FTM-MAI-l-s';
   const depositFee = 0;
   const tvlCap = ethers.constants.MaxUint256;
   const options = {gasPrice: 200000000000, gasLimit: 9000000};

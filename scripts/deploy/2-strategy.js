@@ -1,7 +1,7 @@
 const hre = require('hardhat');
 
 async function main() {
-  const vaultAddress = '0xe040634Ce403341eB5BfF36B88A1Cd2dF665773a';
+  const vaultAddress = '0x1c7AC81E72E40Ff1866b41aE89519b2758699bf0';
 
   const Strategy = await ethers.getContractFactory('ReaperStrategyLiquidDriver');
   const treasuryAddress = '0x0e7c5313E9BB80b654734d9b7aB1FB01468deE3b';
@@ -10,8 +10,8 @@ async function main() {
   const strategist2 = '0x81876677843D00a7D792E1617459aC2E93202576';
   const strategist3 = '0x1A20D7A31e5B3Bc5f02c8A146EF6f394502a10c4';
 
-  const wantAddress = '0x2599Eba5fD1e49F294C76D034557948034d6C96E';
-  const poolId = 37;
+  const wantAddress = '0x51eb93ecfeffbb2f6fe6106c4491b5a0b944e8bd';
+  const poolId = 38;
 
   const options = {gasPrice: 200000000000, gasLimit: 9000000};
 
