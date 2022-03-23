@@ -13,7 +13,7 @@ import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
 import "hardhat/console.sol";
 
 /**
- * @dev Deposit TOMB-MAI LP in TShareRewardsPool. Harvest TSHARE rewards and recompound.
+ * @dev Deposit LP in MasterChef to harvest and compound rewards.
  */
 contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -25,10 +25,9 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
     /**
      * @dev Tokens Used:
      * {WFTM} - Required for liquidity routing when doing swaps.
-     * {TSHARE} - Reward token for depositing LP into TShareRewardsPool.
-     * {want} - Address of TOMB-MAI LP token. (lowercase name for FE compatibility)
-     * {lpToken0} - TOMB (name for FE compatibility)
-     * {lpToken1} - MAI (name for FE compatibility)
+     * {LQDR} - Reward token.
+     * {DEUS} - Dual reward token.
+     * {want} - Address of LP token.
      */
     address public constant WFTM = address(0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83);
     address public constant LQDR = address(0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9);
@@ -37,15 +36,14 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
 
     /**
      * @dev Paths used to swap tokens:
-     * {tshareToWftmPath} - to swap {TSHARE} to {WFTM} (using SPOOKY_ROUTER)
-     * {wftmToTombPath} - to swap {WFTM} to {lpToken0} (using SPOOKY_ROUTER)
-     * {tombToMaiPath} - to swap half of {lpToken0} to {lpToken1} (using TOMB_ROUTER)
+     * {wftmToLP0Route} - to swap {WFTM} to {lpToken0} (using SPIRIT_ROUTER)
+     * {wftmToLP1Route} - to swap {WFTM} to {lpToken1} (using SPIRIT_ROUTER)
      */
     address[] public wftmToLP0Route;
     address[] public wftmToLP1Route;
 
     /**
-     * @dev Tomb variables
+     * @dev Strategy variables
      * {poolId} - ID of pool in which to deposit LP tokens
      */
     uint256 public poolId;
@@ -100,12 +98,11 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
 
     /**
      * @dev Core function of the strat, in charge of collecting and re-investing rewards.
-     *      1. Claims {TSHARE} from the {TSHARE_REWARDS_POOL}.
-     *      2. Swaps {TSHARE} to {WFTM} using {SPOOKY_ROUTER}.
-     *      3. Claims fees for the harvest caller and treasury.
-     *      4. Swaps the {WFTM} token for {lpToken0} using {SPOOKY_ROUTER}.
-     *      5. Swaps half of {lpToken0} to {lpToken1} using {TOMB_ROUTER}.
-     *      6. Creates new LP tokens and deposits.
+     *      1. Claims rewards
+     *      2. Swaps rewards to WFTM
+     *      3. Claims fees for the harvest caller and treasury
+     *      4. Swaps the {WFTM} to make more want token
+     *      5. Deposits in the MasterChef
      */
     function _harvestCore() internal override {
         IMasterChef(MASTER_CHEF).harvest(poolId, address(this));
@@ -116,7 +113,7 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
     }
 
     /**
-     * @dev Core harvest function. Swaps {LQDR} and {dualRewardToken} balances into {WFTM}.
+     * @dev Core harvest function. Swaps {LQDR} and {DEUS} balances into {WFTM}.
      */
     function _swapRewards() internal {
         uint256 lqdrBal = IERC20Upgradeable(LQDR).balanceOf(address(this));
@@ -132,7 +129,7 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
     }
 
     /**
-     * @dev Helper function to swap tokens given an {_amount}, swap {_path}, and {_router}.
+     * @dev Helper function to swap tokens given an {_amount}, swap {_path}.
      */
     function _swap(
         uint256 _amount,
@@ -284,11 +281,11 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
 
     /**
      * @dev Gives all the necessary allowances to:
-     *      - deposit {want} into {TSHARE_REWARDS_POOL}
-     *      - swap {TSHARE} using {SPOOKY_ROUTER}
-     *      - swap {WFTM} using {SPOOKY_ROUTER}
-     *      - swap {lpToken0} using {TOMB_ROUTER}
-     *      - add liquidity using {lpToken0} and {lpToken1} in {TOMB_ROUTER}
+     *      - deposit {want} into {MASTER_CHEF}
+     *      - swap {LQDR} using {SPIRIT_ROUTER}
+     *      - swap {DEUS} using {SPIRIT_ROUTER}
+     *      - swap {WFTM} using {SPIRIT_ROUTER}
+     *      - add liquidity using {lpToken0} and {lpToken1} in {SPIRIT_ROUTER}
      */
     function _giveAllowances() internal override {
         // want -> MASTER_CHEF
@@ -351,6 +348,9 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
         address[] memory _route
     ) external {
         _onlyStrategistOrOwner();
+        require(WFTM == _route[0], "Incorrect path");
+        address lpToken0 = IUniswapV2Pair(want).token0();
+        require(lpToken0 == _route[_route.length - 1], "Incorrect path");
         wftmToLP0Route = _route;
     }
 
@@ -358,6 +358,9 @@ contract ReaperStrategyLiquidDriver is ReaperBaseStrategyv1_1 {
         address[] memory _route
     ) external {
         _onlyStrategistOrOwner();
+        require(WFTM == _route[0], "Incorrect path");
+        address lpToken1 = IUniswapV2Pair(want).token1();
+        require(lpToken1 == _route[_route.length - 1], "Incorrect path");
         wftmToLP1Route = _route;
     }
 }
